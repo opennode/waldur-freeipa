@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-25 21:43+0300\n"
+"POT-Creation-Date: 2017-05-26 00:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,17 +42,23 @@ msgstr ""
 msgid "active"
 msgstr ""
 
-#: src/nodeconductor_freeipa/models.py:26
-msgid ""
-"User is automatically disabled if he does not have role in any organization "
-"or project."
-msgstr ""
-
-#: src/nodeconductor_freeipa/serializers.py:13
-#: src/nodeconductor_freeipa/serializers.py:27
+#: src/nodeconductor_freeipa/serializers.py:15
+#: src/nodeconductor_freeipa/serializers.py:29
 msgid "User must agree with the policy."
 msgstr ""
 
-#: src/nodeconductor_freeipa/views.py:22
-msgid "User with such name already exists."
+#: src/nodeconductor_freeipa/serializers.py:36
+msgid "User already has profile."
+msgstr ""
+
+#: src/nodeconductor_freeipa/views.py:32
+msgid "Profile with such name already exists."
+msgstr ""
+
+#: src/nodeconductor_freeipa/views.py:47
+msgid "Profile is already disabled."
+msgstr ""
+
+#: src/nodeconductor_freeipa/views.py:69
+msgid "Profile is already enabled."
 msgstr ""
