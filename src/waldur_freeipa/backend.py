@@ -7,7 +7,7 @@ from django.conf import settings
 
 class FreeIPABackend(object):
     def __init__(self):
-        options = settings.NODECONDUCTOR_FREEIPA
+        options = settings.WALDUR_FREEIPA
         self._client = python_freeipa.Client(
             host=options['host'],
             verify_ssl=options['verify_ssl']

@@ -20,7 +20,7 @@ tests_requires = [
 
 
 setup(
-    name='nodeconductor-freeipa',
+    name='waldur-freeipa',
     version='0.1.1',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
@@ -36,7 +36,7 @@ setup(
     zip_safe=False,
     entry_points={
         'nodeconductor_extensions': (
-            'nodeconductor_freeipa = nodeconductor_freeipa.extension:FreeIPAExtension',
+            'waldur_freeipa = waldur_freeipa.extension:FreeIPAExtension',
         ),
     },
     include_package_data=True,

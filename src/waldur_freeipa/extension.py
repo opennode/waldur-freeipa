@@ -3,17 +3,17 @@ from nodeconductor.core import NodeConductorExtension
 
 class FreeIPAExtension(NodeConductorExtension):
     class Settings:
-        NODECONDUCTOR_FREEIPA = {
-            'ENABLED': False,
-            'host': 'localhost',
-            'username': 'USERNAME',
-            'password': 'PASSWORD',
-            'verify_ssl': False,
+        WALDUR_FREEIPA = {
+            'host': 'ipa.example.com',
+            'username': 'admin',
+            'password': 'secret',
+            'verify_ssl': True,
+            'username_prefix': '',
         }
 
     @staticmethod
     def django_app():
-        return 'nodeconductor_freeipa'
+        return 'waldur_freeipa'
 
     @staticmethod
     def rest_urls():

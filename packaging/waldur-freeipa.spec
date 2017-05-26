@@ -1,11 +1,11 @@
-Name: nodeconductor-freeipa
+Name: waldur-freeipa
 Summary: FreeIPA client plugin for Waldur MasterMind
 Group: Development/Libraries
 Version: 0.1.0
 Release: 1.el7
 License: MIT
 Url: https://waldur.com
-Source0: nodeconductor-freeipa-%{version}.tar.gz
+Source0: waldur-freeipa-%{version}.tar.gz
 
 Requires: nodeconductor >= 0.138.0
 Requires: python-freeipa >= 0.1.1
@@ -19,7 +19,7 @@ BuildRequires: python-setuptools
 Waldur FreeIPA plugin enables linking of Waldur account with FreeIPA profile.
 
 %prep
-%setup -q -n nodeconductor-freeipa-%{version}
+%setup -q -n waldur-freeipa-%{version}
 
 %build
 python setup.py build

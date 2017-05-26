@@ -3,6 +3,7 @@ from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import status, test
 
 from nodeconductor.structure.tests import factories as structure_factories
+from waldur_freeipa.tests.helpers import override_plugin_settings
 
 from . import factories
 
@@ -55,7 +56,7 @@ class ProfileCreateTest(BaseProfileTest):
     def setUp(self):
         super(ProfileCreateTest, self).setUp()
         self.valid_data = {
-            'username': 'ALICE',
+            'username': 'alice',
             'agree_with_policy': True
         }
 
@@ -65,19 +66,26 @@ class ProfileCreateTest(BaseProfileTest):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertIn('username', response.data)
 
-    def test_freeipa_client_is_called(self, mock_client):
+    def test_if_profile_created_client_is_called(self, mock_client):
         response = self.client.post(self.url, self.valid_data)
-
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-        self.assertTrue(response.data['is_active'])
-        self.assertEqual('ALICE', response.data['username'])
-        self.assertIsNotNone(response.data['agreement_date'])
         mock_client().user_add.assert_called_once()
+
+    def test_profile_is_active_initially(self, mock_client):
+        response = self.client.post(self.url, self.valid_data)
+        self.assertTrue(response.data['is_active'])
+        self.assertIsNotNone(response.data['agreement_date'])
+
+    @override_plugin_settings(username_prefix='ipa_')
+    def test_username_is_prefixed(self, mock_client):
+        response = self.client.post(self.url, self.valid_data)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual('ipa_alice', response.data['username'])
 
     def test_backend_is_called_with_correct_parameters(self, mock_client):
         self.client.post(self.url, self.valid_data)
         mock_client().user_add.assert_called_once_with(
-            username='ALICE',
+            username='alice',
             first_name='N/A',
             last_name='N/A',
             full_name=self.user.full_name,

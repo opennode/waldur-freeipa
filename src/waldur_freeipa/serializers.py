@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
@@ -24,16 +25,24 @@ class ProfileSerializer(core_serializers.AugmentedSerializerMixin,
             url={'lookup_field': 'uuid', 'view_name': 'freeipa-profile-detail'},
         )
 
-    def validate_agree_with_policy(self, value):
-        if not value:
-            raise serializers.ValidationError(_('User must agree with the policy.'))
-
-        return value
-
     def create(self, validated_data):
+        # Check if user already has FreeIPA profile
         user = self.context['request'].user
         if models.Profile.objects.filter(user=user).exists():
-            raise serializers.ValidationError({'details': _('User already has profile.')})
-        validated_data.pop('agree_with_policy')
+            raise serializers.ValidationError({
+                'details': _('User already has profile.')
+            })
         validated_data['user'] = user
+
+        # Check if user agrees with policy
+        if not validated_data.pop('agree_with_policy'):
+            raise serializers.ValidationError({
+                'agree_with_policy': _('User must agree with the policy.')
+            })
+
+        # Prepend username suffix
+        prefix = settings.WALDUR_FREEIPA['username_prefix']
+        if prefix:
+            validated_data['username'] = '%s%s' % (prefix, validated_data['username'])
+
         return super(ProfileSerializer, self).create(validated_data)

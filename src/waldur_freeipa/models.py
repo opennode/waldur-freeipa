@@ -15,7 +15,7 @@ class Profile(core_models.UuidMixin, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     username = models.CharField(
         _('username'), max_length=255, unique=True,
-        help_text=_('Required. 255 characters or fewer. Letters, numbers and ./+/-/_ characters'),
+        help_text=_('Letters, numbers and ./+/-/_ characters'),
         validators=[
             validators.RegexValidator(re.compile('^[a-zA-Z0-9_.][a-zA-Z0-9_.-]*[a-zA-Z0-9_.$-]?$'),
                                       _('Enter a valid username.'), 'invalid')

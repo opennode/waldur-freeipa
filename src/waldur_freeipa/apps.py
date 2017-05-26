@@ -4,7 +4,7 @@ from django.apps import AppConfig
 
 
 class FreeIPAConfig(AppConfig):
-    name = 'nodeconductor_freeipa'
+    name = 'waldur_freeipa'
     verbose_name = 'FreeIPA'
 
     def ready(self):
