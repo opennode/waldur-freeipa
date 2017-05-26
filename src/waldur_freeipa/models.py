@@ -3,12 +3,20 @@ from __future__ import unicode_literals
 import re
 
 from django.conf import settings
-from django.core import validators
+from django.core import exceptions, validators
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from nodeconductor.core import models as core_models
+
+
+def validate_username(value):
+    if value in settings.WALDUR_FREEIPA['BLACKLISTED_USERNAMES']:
+        raise exceptions.ValidationError(
+            _('%(value)s is not valid FreeIPA username.'),
+            params={'value': value},
+        )
 
 
 class Profile(core_models.UuidMixin, models.Model):
@@ -17,6 +25,7 @@ class Profile(core_models.UuidMixin, models.Model):
         _('username'), max_length=255, unique=True,
         help_text=_('Letters, numbers and ./+/-/_ characters'),
         validators=[
+            validate_username,
             validators.RegexValidator(re.compile('^[a-zA-Z0-9_.][a-zA-Z0-9_.-]*[a-zA-Z0-9_.$-]?$'),
                                       _('Enter a valid username.'), 'invalid')
         ])

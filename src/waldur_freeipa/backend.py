@@ -9,10 +9,10 @@ class FreeIPABackend(object):
     def __init__(self):
         options = settings.WALDUR_FREEIPA
         self._client = python_freeipa.Client(
-            host=options['host'],
-            verify_ssl=options['verify_ssl']
+            host=options['HOSTNAME'],
+            verify_ssl=options['VERIFY_SSL']
         )
-        self._client.login(options['username'], options['password'])
+        self._client.login(options['USERNAME'], options['PASSWORD'])
 
     def _format_ssh_keys(self, user):
         return list(user.sshpublickey_set.values_list('public_key', flat=True))
