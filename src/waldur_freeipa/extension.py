@@ -9,7 +9,7 @@ class FreeIPAExtension(NodeConductorExtension):
             'PASSWORD': 'secret',
             'VERIFY_SSL': True,
             'USERNAME_PREFIX': '',
-            'BLACKLISTED_USERNAMES': [],
+            'BLACKLISTED_USERNAMES': ['root'],
         }
 
     @staticmethod
