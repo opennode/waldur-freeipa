@@ -8,7 +8,7 @@ Url: https://waldur.com
 Source0: waldur-freeipa-%{version}.tar.gz
 
 Requires: nodeconductor >= 0.138.0
-Requires: python-freeipa >= 0.1.1
+Requires: python-freeipa >= 0.1.2
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
