@@ -8,7 +8,7 @@ Url: https://waldur.com
 Source0: waldur-freeipa-%{version}.tar.gz
 
 Requires: nodeconductor >= 0.138.0
-Requires: python-freeipa >= 0.1.1
+Requires: python-freeipa >= 0.1.2
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -36,5 +36,8 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Fri May 26 2017 Jenkins <jenkins@opennodecloud.com> - 0.1.0-1.el7
+- New upstream release
+
 * Thu May 25 2017 Victor Mireyev <victor@opennodecloud.com> - 0.1.0-1
 - Initial version of the package.
