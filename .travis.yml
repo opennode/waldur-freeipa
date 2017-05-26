@@ -1,0 +1,16 @@
+language: python
+python:
+- '2.7'
+install:
+- python setup.py develop
+script:
+- python setup.py test
+deploy:
+  provider: pypi
+  user: opennode
+  password:
+    secure: PYPI_SECRET_KEY
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: opennode/waldur-freeipa
