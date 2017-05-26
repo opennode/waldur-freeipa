@@ -4,11 +4,12 @@ from nodeconductor.core import NodeConductorExtension
 class FreeIPAExtension(NodeConductorExtension):
     class Settings:
         WALDUR_FREEIPA = {
-            'host': 'ipa.example.com',
-            'username': 'admin',
-            'password': 'secret',
-            'verify_ssl': True,
-            'username_prefix': '',
+            'HOSTNAME': 'ipa.example.com',
+            'USERNAME': 'admin',
+            'PASSWORD': 'secret',
+            'VERIFY_SSL': True,
+            'USERNAME_PREFIX': '',
+            'BLACKLISTED_USERNAMES': [],
         }
 
     @staticmethod

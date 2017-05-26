@@ -32,6 +32,15 @@ class ProfileValidateTest(BaseProfileTest):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertIn('username', response.data)
 
+    @override_plugin_settings(BLACKLISTED_USERNAMES=['root'])
+    def test_blacklisted_username_is_not_allowed(self):
+        response = self.client.post(self.url, {
+            'username': 'root',
+            'agree_with_policy': True
+        })
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertIn('username', response.data)
+
     def test_user_should_agree_with_policy(self):
         response = self.client.post(self.url, {
             'username': 'VALID',
@@ -76,7 +85,7 @@ class ProfileCreateTest(BaseProfileTest):
         self.assertTrue(response.data['is_active'])
         self.assertIsNotNone(response.data['agreement_date'])
 
-    @override_plugin_settings(username_prefix='ipa_')
+    @override_plugin_settings(USERNAME_PREFIX='ipa_')
     def test_username_is_prefixed(self, mock_client):
         response = self.client.post(self.url, self.valid_data)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)

@@ -41,7 +41,7 @@ class ProfileSerializer(core_serializers.AugmentedSerializerMixin,
             })
 
         # Prepend username suffix
-        prefix = settings.WALDUR_FREEIPA['username_prefix']
+        prefix = settings.WALDUR_FREEIPA['USERNAME_PREFIX']
         if prefix:
             validated_data['username'] = '%s%s' % (prefix, validated_data['username'])
 
