@@ -36,5 +36,8 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Fri May 26 2017 Jenkins <jenkins@opennodecloud.com> - 0.1.0-1.el7
+- New upstream release
+
 * Thu May 25 2017 Victor Mireyev <victor@opennodecloud.com> - 0.1.0-1
 - Initial version of the package.
