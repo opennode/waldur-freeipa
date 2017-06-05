@@ -223,10 +223,18 @@ class ProfileSshKeysTest(test.APITransactionTestCase):
         self.ssh_keys = structure_factories.SshPublicKeyFactory.create_batch(3, user=self.user)
         self.expected_keys = [key.public_key for key in self.ssh_keys]
 
-    def test_profile_can_update_ssh_keys_for_his_freeipa_account(self, mock_client):
+    def test_profile_can_update_ssh_keys_for_his_profile(self, mock_client):
         response = self.client.post(self.url)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         mock_client().user_mod.assert_called_once_with(
             self.profile.username,
             ipasshpubkey=self.expected_keys
         )
+
+    def test_if_profile_has_same_ssh_keys_profile_is_not_updated(self, mock_client):
+        mock_client().user_show.return_value = {
+            'ipasshpubkey': self.expected_keys
+        }
+        response = self.client.post(self.url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        mock_client().user_mod.assert_not_called()
