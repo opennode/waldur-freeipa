@@ -35,8 +35,13 @@ class ProfileViewSet(core_views.ActionsViewSet):
     @decorators.detail_route(methods=['post'])
     def update_ssh_keys(self, request, uuid=None):
         profile = self.get_object()
-        backend.FreeIPABackend().update_ssh_keys(profile)
-        return response.Response(status=status.HTTP_200_OK)
+        try:
+            backend.FreeIPABackend().update_ssh_keys(profile)
+        except freeipa_exceptions.NotFound:
+            profile.delete()
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return response.Response(status=status.HTTP_200_OK)
 
     @decorators.detail_route(methods=['post'])
     @transaction.atomic()
