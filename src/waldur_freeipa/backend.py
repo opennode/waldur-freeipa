@@ -6,13 +6,12 @@ import csv
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-
 import python_freeipa
 
 from nodeconductor.structure import models as structure_models
 from nodeconductor.quotas import models as quota_models
-from . import models
-from .apps import FreeIPAConfig
+
+from . import models, utils
 
 
 class GroupSynchronizer(object):
@@ -68,7 +67,7 @@ class GroupSynchronizer(object):
         stream = cStringIO.StringIO()
         writer = csv.writer(stream)
         writer.writerow([name.encode('utf-8'), str(limit)])
-        return stream.getvalue().strip()
+        return stream.getvalue().strip().decode('utf-8')
 
     def add_customer(self, customer, limit):
         group = self.customer_group_name(customer)
@@ -107,7 +106,7 @@ class GroupSynchronizer(object):
     def get_limits(self, model):
         ctype = ContentType.objects.get_for_model(model)
         customer_quotas = quota_models.Quota.objects.filter(
-            content_type=ctype, name=FreeIPAConfig.QUOTA_NAME
+            content_type=ctype, name=utils.QUOTA_NAME
         ).only('object_id', 'limit')
         return {
             quota.object_id: quota.limit
@@ -117,13 +116,13 @@ class GroupSynchronizer(object):
     def collect_waldur_customers(self):
         limits = self.get_limits(structure_models.Customer)
         for customer in structure_models.Customer.objects.all():
-            limit = limits.get(customer.id, -1)
+            limit = limits.get(customer.id, -1.0)
             self.add_customer(customer, limit)
 
     def collect_waldur_projects(self):
         limits = self.get_limits(structure_models.Project)
         for project in structure_models.Project.objects.all():
-            limit = limits.get(project.id, -1)
+            limit = limits.get(project.id, -1.0)
             self.add_project(project, limit)
 
     def add_freeipa_group(self, groupname, description, children):
@@ -153,10 +152,12 @@ class GroupSynchronizer(object):
     def add_missing_groups(self):
         missing_groups = self.groups - self.freeipa_groups
         for group in missing_groups:
+            utils.renew_task_status()
             self.client.group_add(group, description=self.group_names.get(group))
 
     def sync_group_names(self):
         for group in self.groups & self.freeipa_groups:
+            utils.renew_task_status()
             waldur_name = self.group_names.get(group)
             freeipa_name = self.freeipa_names.get(group)
             if waldur_name != freeipa_name:
@@ -164,6 +165,7 @@ class GroupSynchronizer(object):
 
     def sync_members(self):
         for group in self.groups:
+            utils.renew_task_status()
             waldur_members = self.group_users.get(group, set())
             backend_members = self.freeipa_users.get(group, set())
 
@@ -177,6 +179,7 @@ class GroupSynchronizer(object):
 
     def sync_children(self):
         for group in self.groups:
+            utils.renew_task_status()
             waldur_children = self.group_children.get(group, set())
             freeipa_children = self.freeipa_children.get(group, set())
 
@@ -190,19 +193,24 @@ class GroupSynchronizer(object):
 
     def delete_stale_groups(self):
         for group in self.freeipa_groups - self.groups:
+            utils.renew_task_status()
             self.client.group_del(group)
 
     def sync(self):
-        self.collect_waldur_permissions()
-        self.collect_waldur_customers()
-        self.collect_waldur_projects()
-        self.collect_freeipa_groups()
+        try:
+            self.collect_waldur_permissions()
+            self.collect_waldur_customers()
+            self.collect_waldur_projects()
+            self.collect_freeipa_groups()
 
-        self.add_missing_groups()
-        self.sync_group_names()
-        self.sync_members()
-        self.sync_children()
-        self.delete_stale_groups()
+            self.add_missing_groups()
+            self.sync_group_names()
+            self.sync_members()
+            self.sync_children()
+            self.delete_stale_groups()
+
+        finally:
+            utils.release_task_status()
 
 
 class FreeIPABackend(object):

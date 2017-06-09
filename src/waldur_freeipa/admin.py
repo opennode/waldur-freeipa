@@ -5,8 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from nodeconductor.core import admin as core_admin
 
-from . import models
-from .backend import FreeIPABackend
+from . import models, tasks
 
 
 class ProfileAdmin(core_admin.ExtraActionsMixin, admin.ModelAdmin):
@@ -21,8 +20,8 @@ class ProfileAdmin(core_admin.ExtraActionsMixin, admin.ModelAdmin):
         ]
 
     def sync_groups(self, request):
-        FreeIPABackend().synchronize_groups()
-        self.message_user(request, _('All FreeIPA groups have been updated.'))
+        tasks.schedule_sync()
+        self.message_user(request, _('Groups synchronization has been scheduled.'))
         return redirect(reverse('admin:waldur_freeipa_profile_changelist'))
 
 
