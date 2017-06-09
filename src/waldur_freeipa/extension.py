@@ -21,3 +21,13 @@ class FreeIPAExtension(NodeConductorExtension):
         from .urls import register_in
         return register_in
 
+    @staticmethod
+    def celery_tasks():
+        from datetime import timedelta
+        return {
+            'waldur-freeipa-sync-groups': {
+                'task': 'waldur_freeipa.sync_groups',
+                'schedule': timedelta(minutes=10),
+                'args': (),
+            },
+        }

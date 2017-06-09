@@ -6,7 +6,7 @@ from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import decorators, exceptions, response, status
 
 from nodeconductor.core import views as core_views
-
+from nodeconductor.structure import permissions
 from . import backend, models, serializers
 
 
