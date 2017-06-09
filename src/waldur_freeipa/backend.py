@@ -20,8 +20,8 @@ class GroupSynchronizer(object):
     This class maps Waldur structure units to FreeIPA groups and memberships.
 
     1) Customers and projects are modelled as FreeIPA groups.
-    2) Group name for customer looks like ipa_customer_590a409656054fc284b1102829406c63
-       Group name for project looks like ipa_project_590a409656054fc284b1102829406c63
+    2) Group name for customer looks like waldur_customer_590a409656054fc284b1102829406c63
+       Group name for project looks like waldur_project_590a409656054fc284b1102829406c63
     2) Customer name is stored as group description.
        Similarly, project name is stored as group description.
     3) Project group is modelled as member of customer group.
@@ -38,7 +38,7 @@ class GroupSynchronizer(object):
     """
     def __init__(self, client):
         self.client = client
-        self.prefix = settings.WALDUR_FREEIPA.get('GROUPNAME_PREFIX', '')
+        self.prefix = settings.WALDUR_FREEIPA['GROUPNAME_PREFIX']
 
         self.profiles = {
             profile.user_id: profile.username

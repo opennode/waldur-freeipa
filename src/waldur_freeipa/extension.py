@@ -8,7 +8,8 @@ class FreeIPAExtension(NodeConductorExtension):
             'USERNAME': 'admin',
             'PASSWORD': 'secret',
             'VERIFY_SSL': True,
-            'USERNAME_PREFIX': '',
+            'USERNAME_PREFIX': 'waldur_',
+            'GROUPNAME_PREFIX': 'waldur_',
             'BLACKLISTED_USERNAMES': ['root'],
         }
 

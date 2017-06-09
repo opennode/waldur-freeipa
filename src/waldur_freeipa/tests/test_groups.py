@@ -20,7 +20,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add.assert_called_once_with(
-            'customer_%s' % customer.uuid,
+            'waldur_customer_%s' % customer.uuid,
             description='customer,-1',
         )
 
@@ -32,7 +32,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add.has_calls([mock.call(
-            'customer_%s' % customer.uuid,
+            'waldur_customer_%s' % customer.uuid,
             description='customer,100',
         )])
 
@@ -43,7 +43,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add.has_calls([mock.call(
-            'project_%s' % project.uuid,
+            'waldur_project_%s' % project.uuid,
             description='project,-1',
         )])
 
@@ -55,7 +55,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add.has_calls([mock.call(
-            'project_%s' % project.uuid,
+            'waldur_project_%s' % project.uuid,
             description='project,100',
         )])
 
@@ -64,14 +64,14 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['customer_%s' % customer.uuid],
+                    'cn': ['waldur_customer_%s' % customer.uuid],
                     'description': ['New customer name']
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_mod.assert_called_once_with(
-            'customer_%s' % customer.uuid,
+            'waldur_customer_%s' % customer.uuid,
             description='customer,-1',
         )
 
@@ -80,14 +80,14 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['project_%s' % project.uuid],
+                    'cn': ['waldur_project_%s' % project.uuid],
                     'description': ['New project name']
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_mod.assert_called_once_with(
-            'project_%s' % project.uuid,
+            'waldur_project_%s' % project.uuid,
             description='project,-1',
         )
 
@@ -101,7 +101,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add_member.assert_called_once_with(
-            'customer_%s' % customer.uuid,
+            'waldur_customer_%s' % customer.uuid,
             users=[owner.username],
             skip_errors=True,
         )
@@ -111,14 +111,14 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['customer_%s' % customer.uuid],
+                    'cn': ['waldur_customer_%s' % customer.uuid],
                     'member_user': ['stale_user']
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_remove_member.assert_called_once_with(
-            'customer_%s' % customer.uuid,
+            'waldur_customer_%s' % customer.uuid,
             users=['stale_user'],
             skip_errors=True,
         )
@@ -127,12 +127,12 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['stale_customer'],
+                    'cn': ['waldur_stale_customer'],
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
-        mock_client().group_del.assert_called_once_with('stale_customer')
+        mock_client().group_del.assert_called_once_with('waldur_stale_customer')
 
     def test_missing_children_are_added_to_customer_group(self, mock_client):
         fixture = structure_fixtures.ProjectFixture()
@@ -143,8 +143,8 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add_member.assert_called_once_with(
-            'customer_%s' % customer.uuid,
-            groups=['project_%s' % project.uuid],
+            'waldur_customer_%s' % customer.uuid,
+            groups=['waldur_project_%s' % project.uuid],
             skip_errors=True,
         )
 
@@ -153,14 +153,14 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['customer_%s' % customer.uuid],
-                    'member_group': ['stale_child']
+                    'cn': ['waldur_customer_%s' % customer.uuid],
+                    'member_group': ['waldur_stale_child']
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_remove_member.assert_called_once_with(
-            'customer_%s' % customer.uuid,
-            groups=['stale_child'],
+            'waldur_customer_%s' % customer.uuid,
+            groups=['waldur_stale_child'],
             skip_errors=True,
         )

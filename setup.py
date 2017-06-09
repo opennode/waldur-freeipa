@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'nodeconductor>=0.138.0',
+    'nodeconductor>0.141.0',
     'python_freeipa>=0.1.2',
 ]
 
