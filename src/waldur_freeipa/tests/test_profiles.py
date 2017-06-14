@@ -94,7 +94,7 @@ class ProfileCreateTest(BaseProfileTest):
     def test_backend_is_called_with_correct_parameters(self, mock_client):
         self.client.post(self.url, self.valid_data)
         mock_client().user_add.assert_called_once_with(
-            username='alice',
+            username='waldur_alice',
             first_name='N/A',
             last_name='N/A',
             full_name=self.user.full_name,

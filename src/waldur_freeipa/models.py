@@ -7,6 +7,7 @@ from django.core import exceptions, validators
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import python_2_unicode_compatible
 
 from nodeconductor.core import models as core_models
 
@@ -19,6 +20,7 @@ def validate_username(value):
         )
 
 
+@python_2_unicode_compatible
 class Profile(core_models.UuidMixin, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     username = models.CharField(
@@ -32,3 +34,6 @@ class Profile(core_models.UuidMixin, models.Model):
     agreement_date = models.DateTimeField(_('agreement date'), default=timezone.now,
                                           help_text=_('Indicates when the user has agreed with the policy.'))
     is_active = models.BooleanField(_('active'), default=True)
+
+    def __str__(self):
+        return self.username
