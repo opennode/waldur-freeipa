@@ -19,7 +19,7 @@ class GroupSynchronizer(object):
     This class maps Waldur structure units to FreeIPA groups and memberships.
 
     1) Customers and projects are modelled as FreeIPA groups.
-    2) Group name for customer looks like waldur_customer_590a409656054fc284b1102829406c63
+    2) Group name for customer looks like waldur_org_590a409656054fc284b1102829406c63
        Group name for project looks like waldur_project_590a409656054fc284b1102829406c63
     2) Customer name is stored as group description.
        Similarly, project name is stored as group description.
@@ -61,7 +61,7 @@ class GroupSynchronizer(object):
         return self.group_name('project_%s' % project.uuid)
 
     def customer_group_name(self, customer):
-        return self.group_name('customer_%s' % customer.uuid)
+        return self.group_name('org_%s' % customer.uuid)
 
     def get_group_description(self, name, limit):
         stream = cStringIO.StringIO()

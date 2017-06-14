@@ -20,8 +20,8 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add.assert_called_once_with(
-            'waldur_customer_%s' % customer.uuid,
-            description='customer,-1',
+            'waldur_org_%s' % customer.uuid,
+            description='customer,-1.0',
         )
 
     def test_customer_quota_is_serialized_as_group_description(self, mock_client):
@@ -32,7 +32,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add.has_calls([mock.call(
-            'waldur_customer_%s' % customer.uuid,
+            'waldur_org_%s' % customer.uuid,
             description='customer,100',
         )])
 
@@ -44,7 +44,7 @@ class GroupTest(TestCase):
         FreeIPABackend().synchronize_groups()
         mock_client().group_add.has_calls([mock.call(
             'waldur_project_%s' % project.uuid,
-            description='project,-1',
+            description='project,-1.0',
         )])
 
     def test_project_quota_is_serialized_as_group_description(self, mock_client):
@@ -64,15 +64,15 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['waldur_customer_%s' % customer.uuid],
+                    'cn': ['waldur_org_%s' % customer.uuid],
                     'description': ['New customer name']
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_mod.assert_called_once_with(
-            'waldur_customer_%s' % customer.uuid,
-            description='customer,-1',
+            'waldur_org_%s' % customer.uuid,
+            description='customer,-1.0',
         )
 
     def test_group_description_is_updated_from_project_name(self, mock_client):
@@ -88,7 +88,7 @@ class GroupTest(TestCase):
         FreeIPABackend().synchronize_groups()
         mock_client().group_mod.assert_called_once_with(
             'waldur_project_%s' % project.uuid,
-            description='project,-1',
+            description='project,-1.0',
         )
 
     def test_missing_users_are_added_to_customer_group(self, mock_client):
@@ -101,7 +101,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add_member.assert_called_once_with(
-            'waldur_customer_%s' % customer.uuid,
+            'waldur_org_%s' % customer.uuid,
             users=[owner.username],
             skip_errors=True,
         )
@@ -111,14 +111,14 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['waldur_customer_%s' % customer.uuid],
+                    'cn': ['waldur_org_%s' % customer.uuid],
                     'member_user': ['stale_user']
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_remove_member.assert_called_once_with(
-            'waldur_customer_%s' % customer.uuid,
+            'waldur_org_%s' % customer.uuid,
             users=['stale_user'],
             skip_errors=True,
         )
@@ -143,7 +143,7 @@ class GroupTest(TestCase):
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_add_member.assert_called_once_with(
-            'waldur_customer_%s' % customer.uuid,
+            'waldur_org_%s' % customer.uuid,
             groups=['waldur_project_%s' % project.uuid],
             skip_errors=True,
         )
@@ -153,14 +153,14 @@ class GroupTest(TestCase):
         mock_client().group_find.return_value = {
             'result': [
                 {
-                    'cn': ['waldur_customer_%s' % customer.uuid],
+                    'cn': ['waldur_org_%s' % customer.uuid],
                     'member_group': ['waldur_stale_child']
                 }
             ]
         }
         FreeIPABackend().synchronize_groups()
         mock_client().group_remove_member.assert_called_once_with(
-            'waldur_customer_%s' % customer.uuid,
+            'waldur_org_%s' % customer.uuid,
             groups=['waldur_stale_child'],
             skip_errors=True,
         )

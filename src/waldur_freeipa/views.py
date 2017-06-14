@@ -6,8 +6,7 @@ from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import decorators, exceptions, response, status
 
 from nodeconductor.core import views as core_views
-from nodeconductor.structure import permissions
-from . import backend, models, serializers
+from . import backend, models, serializers, tasks
 
 
 class ProfileViewSet(core_views.ActionsViewSet):
@@ -27,6 +26,7 @@ class ProfileViewSet(core_views.ActionsViewSet):
         profile = serializer.save()
         try:
             backend.FreeIPABackend().create_profile(profile)
+            tasks.schedule_sync()
         except freeipa_exceptions.DuplicateEntry:
             raise exceptions.ValidationError({
                 'username': _('Profile with such name already exists.')
