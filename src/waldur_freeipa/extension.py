@@ -8,7 +8,8 @@ class FreeIPAExtension(NodeConductorExtension):
             'USERNAME': 'admin',
             'PASSWORD': 'secret',
             'VERIFY_SSL': True,
-            'USERNAME_PREFIX': '',
+            'USERNAME_PREFIX': 'waldur_',
+            'GROUPNAME_PREFIX': 'waldur_',
             'BLACKLISTED_USERNAMES': ['root'],
         }
 
@@ -21,3 +22,13 @@ class FreeIPAExtension(NodeConductorExtension):
         from .urls import register_in
         return register_in
 
+    @staticmethod
+    def celery_tasks():
+        from datetime import timedelta
+        return {
+            'waldur-freeipa-sync-groups': {
+                'task': 'waldur_freeipa.sync_groups',
+                'schedule': timedelta(minutes=10),
+                'args': (),
+            },
+        }

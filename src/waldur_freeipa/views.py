@@ -6,8 +6,7 @@ from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import decorators, exceptions, response, status
 
 from nodeconductor.core import views as core_views
-
-from . import backend, models, serializers
+from . import backend, models, serializers, tasks
 
 
 class ProfileViewSet(core_views.ActionsViewSet):
@@ -27,6 +26,7 @@ class ProfileViewSet(core_views.ActionsViewSet):
         profile = serializer.save()
         try:
             backend.FreeIPABackend().create_profile(profile)
+            tasks.schedule_sync()
         except freeipa_exceptions.DuplicateEntry:
             raise exceptions.ValidationError({
                 'username': _('Profile with such name already exists.')
@@ -35,8 +35,13 @@ class ProfileViewSet(core_views.ActionsViewSet):
     @decorators.detail_route(methods=['post'])
     def update_ssh_keys(self, request, uuid=None):
         profile = self.get_object()
-        backend.FreeIPABackend().update_ssh_keys(profile)
-        return response.Response(status=status.HTTP_200_OK)
+        try:
+            backend.FreeIPABackend().update_ssh_keys(profile)
+        except freeipa_exceptions.NotFound:
+            profile.delete()
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return response.Response(status=status.HTTP_200_OK)
 
     @decorators.detail_route(methods=['post'])
     @transaction.atomic()
