@@ -24,7 +24,7 @@ def validate_username(value):
 class Profile(core_models.UuidMixin, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     username = models.CharField(
-        _('username'), max_length=255, unique=True,
+        _('username'), max_length=32, unique=True,
         help_text=_('Letters, numbers and ./+/-/_ characters'),
         validators=[
             validate_username,
