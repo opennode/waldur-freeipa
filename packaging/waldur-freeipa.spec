@@ -7,7 +7,7 @@ License: MIT
 Url: https://waldur.com
 Source0: waldur-freeipa-%{version}.tar.gz
 
-Requires: nodeconductor > 0.141.0
+Requires: waldur-core > 0.141.0
 Requires: python-freeipa >= 0.1.2
 
 BuildArch: noarch
