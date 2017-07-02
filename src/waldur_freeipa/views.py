@@ -6,11 +6,12 @@ from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import decorators, exceptions, response, status
 
 from nodeconductor.core import views as core_views
-from . import backend, models, serializers, tasks
+from . import backend, filters, models, serializers, tasks
 
 
 class ProfileViewSet(core_views.ActionsViewSet):
     queryset = models.Profile.objects.all()
+    filter_class = filters.ProfileFilter
     serializer_class = serializers.ProfileSerializer
     disabled_actions = ['destroy']
     lookup_field = 'uuid'

@@ -8,6 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
+from model_utils import FieldTracker
 
 from nodeconductor.core import models as core_models
 
@@ -24,7 +25,7 @@ def validate_username(value):
 class Profile(core_models.UuidMixin, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     username = models.CharField(
-        _('username'), max_length=255, unique=True,
+        _('username'), max_length=32, unique=True,
         help_text=_('Letters, numbers and ./+/-/_ characters'),
         validators=[
             validate_username,
@@ -34,6 +35,7 @@ class Profile(core_models.UuidMixin, models.Model):
     agreement_date = models.DateTimeField(_('agreement date'), default=timezone.now,
                                           help_text=_('Indicates when the user has agreed with the policy.'))
     is_active = models.BooleanField(_('active'), default=True)
+    tracker = FieldTracker()
 
     def __str__(self):
         return self.username

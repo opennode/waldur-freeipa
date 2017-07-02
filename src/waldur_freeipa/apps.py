@@ -14,7 +14,7 @@ class FreeIPAConfig(AppConfig):
         from nodeconductor.structure import models as structure_models
         from nodeconductor.structure import signals as structure_signals
 
-        from . import handlers, utils
+        from . import handlers, utils, models
 
         for model in (structure_models.Customer, structure_models.Project):
             signals.post_save.connect(
@@ -55,4 +55,16 @@ class FreeIPAConfig(AppConfig):
         structure_models.Project.add_quota_field(
             name=utils.QUOTA_NAME,
             quota_field=QuotaField()
+        )
+
+        signals.pre_save.connect(
+            handlers.log_profile_event,
+            sender=models.Profile,
+            dispatch_uid='waldur_freeipa.handlers.log_profile_event',
+        )
+
+        signals.pre_delete.connect(
+            handlers.log_profile_deleted,
+            sender=models.Profile,
+            dispatch_uid='waldur_freeipa.handlers.log_profile_deleted',
         )
