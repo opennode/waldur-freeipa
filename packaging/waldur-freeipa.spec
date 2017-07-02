@@ -1,7 +1,7 @@
 Name: waldur-freeipa
 Summary: FreeIPA client plugin for Waldur MasterMind
 Group: Development/Libraries
-Version: 0.2.0
+Version: 0.2.1
 Release: 1.el7
 License: MIT
 Url: https://waldur.com
@@ -36,6 +36,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Sun Jul 2 2017 Jenkins <jenkins@opennodecloud.com> - 0.2.1-1.el7
+- New upstream release
+
 * Mon Jun 19 2017 Jenkins <jenkins@opennodecloud.com> - 0.2.0-1.el7
 - New upstream release
 
