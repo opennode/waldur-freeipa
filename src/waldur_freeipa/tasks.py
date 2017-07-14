@@ -1,4 +1,5 @@
 from celery import shared_task
+from django.conf import settings
 
 from . import utils
 from .backend import FreeIPABackend
@@ -22,6 +23,9 @@ def sync_groups():
     This task is used by Celery beat in order to periodically
     schedule FreeIPA group synchronization.
     """
+    if not settings.WALDUR_FREEIPA['ENABLED']:
+        # Skip FreeIPA group synchronization because FreeIPA plugin is disabled
+        return
     schedule_sync()
 
 
