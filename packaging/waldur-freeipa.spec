@@ -22,7 +22,7 @@ Waldur FreeIPA plugin enables linking of Waldur account with FreeIPA profile.
 %setup -q -n waldur-freeipa-%{version}
 
 %build
-python setup.py build
+%{__python} setup.py build
 
 %install
 rm -rf %{buildroot}
@@ -47,6 +47,3 @@ rm -rf %{buildroot}
 
 * Fri May 26 2017 Jenkins <jenkins@opennodecloud.com> - 0.1.0-1.el7
 - New upstream release
-
-* Thu May 25 2017 Victor Mireyev <victor@opennodecloud.com> - 0.1.0-1
-- Initial version of the package.
