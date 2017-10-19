@@ -219,14 +219,16 @@ class ProfileSshKeysTest(test.APITransactionTestCase):
         self.user = structure_factories.UserFactory()
         self.profile = factories.ProfileFactory(user=self.user, is_active=False)
 
-        self.client.force_authenticate(self.user)
-        self.url = factories.ProfileFactory.get_url(self.profile, 'update_ssh_keys')
-
         self.ssh_keys = structure_factories.SshPublicKeyFactory.create_batch(3, user=self.user)
         self.expected_keys = [key.public_key for key in self.ssh_keys]
 
-    def test_profile_can_update_ssh_keys_for_his_profile(self, mock_client):
-        response = self.client.post(self.url)
+    def update_keys(self):
+        self.client.force_authenticate(self.user)
+        url = factories.ProfileFactory.get_url(self.profile, 'update_ssh_keys')
+        return self.client.post(url)
+
+    def test_user_can_update_ssh_keys_for_his_profile(self, mock_client):
+        response = self.update_keys()
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         mock_client().user_mod.assert_called_once_with(
             self.profile.username,
@@ -237,6 +239,22 @@ class ProfileSshKeysTest(test.APITransactionTestCase):
         mock_client().user_show.return_value = {
             'ipasshpubkey': self.expected_keys
         }
-        response = self.client.post(self.url)
+        response = self.update_keys()
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        mock_client().user_mod.assert_not_called()
+
+    def test_if_keys_are_sorted_before_comparison(self, mock_client):
+        mock_client().user_show.return_value = {
+            'ipasshpubkey': sorted(self.expected_keys, reverse=True)
+        }
+        response = self.update_keys()
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        mock_client().user_mod.assert_not_called()
+
+    def test_empty_keys_list_is_processed_correctly(self, mock_client):
+        mock_client().user_show.return_value = {}
+        self.user.sshpublickey_set.all().delete()
+
+        response = self.update_keys()
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         mock_client().user_mod.assert_not_called()
