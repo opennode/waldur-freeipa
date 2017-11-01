@@ -249,8 +249,17 @@ class FreeIPABackend(object):
 
     def update_ssh_keys(self, profile):
         ssh_keys = self._format_ssh_keys(profile.user)
+        if ssh_keys:
+            ssh_keys = sorted(ssh_keys)
+        else:
+            ssh_keys = None
+
         backend_profile = self._client.user_show(profile.username)
-        if backend_profile.get('ipasshpubkey') != ssh_keys:
+        backend_keys = backend_profile.get('ipasshpubkey')
+        if backend_keys:
+            backend_keys = sorted(backend_keys)
+
+        if backend_keys != ssh_keys:
             self._client.user_mod(profile.username, ipasshpubkey=ssh_keys)
 
     def synchronize_groups(self):

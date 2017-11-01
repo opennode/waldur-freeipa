@@ -1,7 +1,7 @@
 Name: waldur-freeipa
 Summary: FreeIPA client plugin for Waldur MasterMind
 Group: Development/Libraries
-Version: 0.2.2
+Version: 0.2.3
 Release: 1.el7
 License: MIT
 Url: https://waldur.com
@@ -22,7 +22,7 @@ Waldur FreeIPA plugin enables linking of Waldur account with FreeIPA profile.
 %setup -q -n waldur-freeipa-%{version}
 
 %build
-python setup.py build
+%{__python} setup.py build
 
 %install
 rm -rf %{buildroot}
@@ -36,6 +36,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Wed Nov 1 2017 Jenkins <jenkins@opennodecloud.com> - 0.2.3-1.el7
+- New upstream release
+
 * Fri Jul 14 2017 Jenkins <jenkins@opennodecloud.com> - 0.2.2-1.el7
 - New upstream release
 
@@ -47,6 +50,3 @@ rm -rf %{buildroot}
 
 * Fri May 26 2017 Jenkins <jenkins@opennodecloud.com> - 0.1.0-1.el7
 - New upstream release
-
-* Thu May 25 2017 Victor Mireyev <victor@opennodecloud.com> - 0.1.0-1
-- Initial version of the package.
