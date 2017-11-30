@@ -1,6 +1,6 @@
 import six
-from nodeconductor.core.models import User
-from nodeconductor.logging.loggers import EventLogger, event_logger
+from waldur_core.core.models import User
+from waldur_core.logging.loggers import EventLogger, event_logger
 
 
 class FreeIPAEventLogger(EventLogger):

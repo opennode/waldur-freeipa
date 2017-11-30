@@ -7,7 +7,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import nodeconductor.core.fields
+import waldur_core.core.fields
 import re
 import waldur_freeipa.models
 
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
             name='Profile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', nodeconductor.core.fields.UUIDField()),
+                ('uuid', waldur_core.core.fields.UUIDField()),
                 ('username', models.CharField(help_text='Letters, numbers and ./+/-/_ characters', max_length=255, unique=True, validators=[waldur_freeipa.models.validate_username, django.core.validators.RegexValidator(re.compile('^[a-zA-Z0-9_.][a-zA-Z0-9_.-]*[a-zA-Z0-9_.$-]?$'), 'Enter a valid username.', 'invalid')], verbose_name='username')),
                 ('agreement_date', models.DateTimeField(default=django.utils.timezone.now, help_text='Indicates when the user has agreed with the policy.', verbose_name='agreement date')),
                 ('is_active', models.BooleanField(default=True, verbose_name='active')),

@@ -4,7 +4,7 @@ import mock
 from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import status, test
 
-from nodeconductor.structure.tests import factories as structure_factories
+from waldur_core.structure.tests import factories as structure_factories
 from waldur_freeipa.tests.helpers import override_plugin_settings
 
 from . import factories

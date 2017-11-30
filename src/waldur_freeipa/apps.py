@@ -9,10 +9,10 @@ class FreeIPAConfig(AppConfig):
     verbose_name = 'FreeIPA'
 
     def ready(self):
-        from nodeconductor.quotas.fields import QuotaField
-        from nodeconductor.quotas import models as quota_models
-        from nodeconductor.structure import models as structure_models
-        from nodeconductor.structure import signals as structure_signals
+        from waldur_core.quotas.fields import QuotaField
+        from waldur_core.quotas import models as quota_models
+        from waldur_core.structure import models as structure_models
+        from waldur_core.structure import signals as structure_signals
 
         from . import handlers, utils, models
 

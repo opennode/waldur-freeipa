@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from model_utils import FieldTracker
 
-from nodeconductor.core import models as core_models
+from waldur_core.core import models as core_models
 
 
 def validate_username(value):
