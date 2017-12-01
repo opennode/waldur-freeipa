@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'waldur_core>0.141.0',
+    'waldur-core>=0.151.0',
     'python_freeipa>=0.1.2',
 ]
 
