@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'nodeconductor>0.141.0',
+    'waldur-core>=0.151.0',
     'python_freeipa>=0.1.2',
 ]
 
@@ -21,7 +21,7 @@ tests_requires = [
 
 setup(
     name='waldur-freeipa',
-    version='0.2.3',
+    version='0.6.3',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',
@@ -36,7 +36,7 @@ setup(
     },
     zip_safe=False,
     entry_points={
-        'nodeconductor_extensions': (
+        'waldur_extensions': (
             'waldur_freeipa = waldur_freeipa.extension:FreeIPAExtension',
         ),
     },

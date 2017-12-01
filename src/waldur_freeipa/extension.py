@@ -1,7 +1,7 @@
-from nodeconductor.core import NodeConductorExtension
+from waldur_core.core import WaldurExtension
 
 
-class FreeIPAExtension(NodeConductorExtension):
+class FreeIPAExtension(WaldurExtension):
     class Settings:
         WALDUR_FREEIPA = {
             'ENABLED': False,

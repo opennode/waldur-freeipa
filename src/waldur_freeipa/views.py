@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import decorators, exceptions, response, status
 
-from nodeconductor.core import views as core_views
+from waldur_core.core import views as core_views
 from . import backend, filters, models, serializers, tasks
 
 

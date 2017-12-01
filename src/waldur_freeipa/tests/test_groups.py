@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 import mock
 from django.test import TestCase
 
-from nodeconductor.quotas import models as quota_models
-from nodeconductor.structure.tests import factories as structure_factories
-from nodeconductor.structure.tests import fixtures as structure_fixtures
+from waldur_core.quotas import models as quota_models
+from waldur_core.structure.tests import factories as structure_factories
+from waldur_core.structure.tests import fixtures as structure_fixtures
 
 from waldur_freeipa import models
 from waldur_freeipa.backend import FreeIPABackend

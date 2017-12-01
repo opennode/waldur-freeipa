@@ -4,7 +4,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
-from nodeconductor.core import serializers as core_serializers
+from waldur_core.core import serializers as core_serializers
 
 from . import models
 
