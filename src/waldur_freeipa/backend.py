@@ -8,8 +8,8 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 import python_freeipa
 
-from nodeconductor.structure import models as structure_models
-from nodeconductor.quotas import models as quota_models
+from waldur_core.structure import models as structure_models
+from waldur_core.quotas import models as quota_models
 
 from . import models, utils
 
