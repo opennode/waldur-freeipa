@@ -21,7 +21,7 @@ tests_requires = [
 
 setup(
     name='waldur-freeipa',
-    version='0.2.3',
+    version='0.6.3',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',
