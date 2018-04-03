@@ -35,6 +35,7 @@ class GroupSynchronizer(object):
     Note that in order to distinguish between Waldur managed groups and internal FreeIPA groups,
     group name prefix should be specified. Similarly, there's also user name prefix setting available.
     """
+
     def __init__(self, client):
         self.client = client
         self.prefix = settings.WALDUR_FREEIPA['GROUPNAME_PREFIX']
