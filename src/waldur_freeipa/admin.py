@@ -23,11 +23,17 @@ class ProfileAdmin(core_admin.ExtraActionsMixin, admin.ModelAdmin):
     def get_extra_actions(self):
         return [
             self.sync_groups,
+            self.sync_names,
         ]
 
     def sync_groups(self, request):
         tasks.schedule_sync()
         self.message_user(request, _('Groups synchronization has been scheduled.'))
+        return redirect(reverse('admin:waldur_freeipa_profile_changelist'))
+
+    def sync_names(self, request):
+        tasks.schedule_sync_names()
+        self.message_user(request, _('Names synchronization has been scheduled.'))
         return redirect(reverse('admin:waldur_freeipa_profile_changelist'))
 
 

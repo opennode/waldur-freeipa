@@ -153,12 +153,12 @@ class GroupSynchronizer(object):
     def add_missing_groups(self):
         missing_groups = self.groups - self.freeipa_groups
         for group in missing_groups:
-            utils.renew_task_status()
+            utils.TaskStatus('groups').renew_task_status()
             self.client.group_add(group, description=self.group_names.get(group))
 
     def sync_group_names(self):
         for group in self.groups & self.freeipa_groups:
-            utils.renew_task_status()
+            utils.TaskStatus('groups').renew_task_status()
             waldur_name = self.group_names.get(group)
             freeipa_name = self.freeipa_names.get(group)
             if waldur_name != freeipa_name:
@@ -166,7 +166,7 @@ class GroupSynchronizer(object):
 
     def sync_members(self):
         for group in self.groups:
-            utils.renew_task_status()
+            utils.TaskStatus('groups').renew_task_status()
             waldur_members = self.group_users.get(group, set())
             backend_members = self.freeipa_users.get(group, set())
 
@@ -180,7 +180,7 @@ class GroupSynchronizer(object):
 
     def sync_children(self):
         for group in self.groups:
-            utils.renew_task_status()
+            utils.TaskStatus('groups').renew_task_status()
             waldur_children = self.group_children.get(group, set())
             freeipa_children = self.freeipa_children.get(group, set())
 
@@ -194,7 +194,7 @@ class GroupSynchronizer(object):
 
     def delete_stale_groups(self):
         for group in self.freeipa_groups - self.groups:
-            utils.renew_task_status()
+            utils.TaskStatus('groups').renew_task_status()
             self.client.group_del(group)
 
     def sync(self):
@@ -211,7 +211,7 @@ class GroupSynchronizer(object):
             self.delete_stale_groups()
 
         finally:
-            utils.release_task_status()
+            utils.TaskStatus('groups').release_task_status()
 
 
 class FreeIPABackend(object):
@@ -230,10 +230,14 @@ class FreeIPABackend(object):
         waldur_user = profile.user
         ssh_keys = self._format_ssh_keys(waldur_user)
 
+        full_name_list = waldur_user.full_name.split()
+        first_name = full_name_list[0] if full_name_list else 'N/A'
+        last_name = full_name_list[-1] if len(full_name_list) > 1 else 'N/A'
+
         self._client.user_add(
             username=profile.username,
-            first_name='N/A',
-            last_name='N/A',
+            first_name=first_name,
+            last_name=last_name,
             full_name=waldur_user.full_name,
             mail=waldur_user.email,
             job_title=waldur_user.job_title,
@@ -262,6 +266,44 @@ class FreeIPABackend(object):
 
         if backend_keys != ssh_keys:
             self._client.user_mod(profile.username, ipasshpubkey=ssh_keys)
+
+    def update_name(self, profile):
+        full_name_list = profile.user.full_name.split()
+        initials = ''
+
+        if full_name_list:
+            first_name = full_name_list[0]
+            initials = first_name[0]
+        else:
+            first_name = 'N/A'
+
+        if len(full_name_list) > 1:
+            last_name = full_name_list[-1]
+            initials += last_name[0]
+        else:
+            last_name = 'N/A'
+
+        params = {
+            'givenname': first_name,
+            'sn': last_name,
+            'cn': profile.user.full_name,
+            'displayname': profile.user.full_name,
+            'initials': initials,
+        }
+
+        try:
+            self._client.user_mod(profile.username, **params)
+        except python_freeipa.exceptions.BadRequest as e:
+            # If no modifications to be performed freeipa-server return an exception.
+            if e.code == 4202:
+                pass
+
+    def synchronize_names(self):
+        try:
+            for profile in models.Profile.objects.filter(is_active=True):
+                self.update_name(profile)
+        finally:
+            utils.TaskStatus('names').release_task_status()
 
     def synchronize_groups(self):
         synchronizer = GroupSynchronizer(self._client)
