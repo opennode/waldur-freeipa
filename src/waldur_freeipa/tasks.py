@@ -41,3 +41,12 @@ def schedule_sync_names():
 @shared_task()
 def _sync_names():
     FreeIPABackend().synchronize_names()
+
+
+def schedule_sync_gecos():
+    _sync_gecos.apply_async(countdown=10)
+
+
+@shared_task()
+def _sync_gecos():
+    FreeIPABackend().synchronize_gecos()

@@ -37,5 +37,9 @@ class Profile(core_models.UuidMixin, models.Model):
     is_active = models.BooleanField(_('active'), default=True)
     tracker = FieldTracker()
 
+    @property
+    def gecos(self):
+        return self.user.full_name
+
     def __str__(self):
         return self.username
