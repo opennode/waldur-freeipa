@@ -32,3 +32,12 @@ def _sync_groups():
     either by signal handler or Celery beat schedule.
     """
     FreeIPABackend().synchronize_groups()
+
+
+def schedule_sync_names():
+    _sync_names.apply_async(countdown=10)
+
+
+@shared_task()
+def _sync_names():
+    FreeIPABackend().synchronize_names()

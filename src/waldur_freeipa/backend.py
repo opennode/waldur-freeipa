@@ -229,11 +229,12 @@ class FreeIPABackend(object):
     def create_profile(self, profile):
         waldur_user = profile.user
         ssh_keys = self._format_ssh_keys(waldur_user)
+        first_name, last_name, _ = utils.get_names(profile.user.full_name)
 
         self._client.user_add(
             username=profile.username,
-            first_name='N/A',
-            last_name='N/A',
+            first_name=first_name,
+            last_name=last_name,
             full_name=waldur_user.full_name,
             mail=waldur_user.email,
             job_title=waldur_user.job_title,
@@ -262,6 +263,27 @@ class FreeIPABackend(object):
 
         if backend_keys != ssh_keys:
             self._client.user_mod(profile.username, ipasshpubkey=ssh_keys)
+
+    def update_name(self, profile):
+        first_name, last_name, initials = utils.get_names(profile.user.full_name)
+        params = {
+            'givenname': first_name,
+            'sn': last_name,
+            'cn': profile.user.full_name,
+            'displayname': profile.user.full_name,
+            'initials': initials,
+        }
+
+        try:
+            self._client.user_mod(profile.username, **params)
+        except python_freeipa.exceptions.BadRequest as e:
+            # If no modifications to be performed freeipa-server return an exception.
+            if e.code == 4202:
+                pass
+
+    def synchronize_names(self):
+        for profile in models.Profile.objects.filter(is_active=True):
+            self.update_name(profile)
 
     def synchronize_groups(self):
         synchronizer = GroupSynchronizer(self._client)
