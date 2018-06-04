@@ -106,7 +106,8 @@ class ProfileCreateTest(BaseProfileTest):
             job_title=self.user.job_title,
             telephonenumber=self.user.phone_number,
             preferred_language=self.user.preferred_language,
-            ssh_key=[]
+            ssh_key=[],
+            gecos=','.join([self.user.full_name, self.user.email, self.user.phone_number]),
         )
 
     def test_when_profile_created_ssh_keys_are_attached(self, mock_client):
@@ -291,4 +292,11 @@ class ProfileUpdateTest(test.APITransactionTestCase):
             givenname=first_name,
             initials=initials,
             sn=last_name,
+        )
+
+    def test_backend_is_called_with_correct_parameters_if_update_gecos(self, mock_client):
+        FreeIPABackend().update_gecos(self.profile)
+        mock_client().user_mod.assert_called_once_with(
+            self.profile.username,
+            gecos=','.join([self.user.full_name, self.user.email, self.user.phone_number]),
         )
