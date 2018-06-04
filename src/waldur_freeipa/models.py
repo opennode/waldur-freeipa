@@ -39,7 +39,13 @@ class Profile(core_models.UuidMixin, models.Model):
 
     @property
     def gecos(self):
-        return self.user.full_name
+        param = []
+        for field in ['full_name', 'email', 'phone_number']:
+            value = getattr(self.user, field, None)
+            if value:
+                param.append(value)
+
+        return ','.join(param)
 
     def __str__(self):
         return self.username
