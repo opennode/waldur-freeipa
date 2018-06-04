@@ -229,10 +229,7 @@ class FreeIPABackend(object):
     def create_profile(self, profile):
         waldur_user = profile.user
         ssh_keys = self._format_ssh_keys(waldur_user)
-
-        full_name_list = waldur_user.full_name.split()
-        first_name = full_name_list[0] if full_name_list else 'N/A'
-        last_name = full_name_list[-1] if len(full_name_list) > 1 else 'N/A'
+        first_name, last_name, _ = utils.get_names(profile.user.full_name)
 
         self._client.user_add(
             username=profile.username,
@@ -268,21 +265,7 @@ class FreeIPABackend(object):
             self._client.user_mod(profile.username, ipasshpubkey=ssh_keys)
 
     def update_name(self, profile):
-        full_name_list = profile.user.full_name.split()
-        initials = ''
-
-        if full_name_list:
-            first_name = full_name_list[0]
-            initials = first_name[0]
-        else:
-            first_name = 'N/A'
-
-        if len(full_name_list) > 1:
-            last_name = full_name_list[-1]
-            initials += last_name[0]
-        else:
-            last_name = 'N/A'
-
+        first_name, last_name, initials = utils.get_names(profile.user.full_name)
         params = {
             'givenname': first_name,
             'sn': last_name,
