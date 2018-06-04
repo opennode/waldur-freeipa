@@ -153,12 +153,12 @@ class GroupSynchronizer(object):
     def add_missing_groups(self):
         missing_groups = self.groups - self.freeipa_groups
         for group in missing_groups:
-            utils.TaskStatus('groups').renew_task_status()
+            utils.renew_task_status()
             self.client.group_add(group, description=self.group_names.get(group))
 
     def sync_group_names(self):
         for group in self.groups & self.freeipa_groups:
-            utils.TaskStatus('groups').renew_task_status()
+            utils.renew_task_status()
             waldur_name = self.group_names.get(group)
             freeipa_name = self.freeipa_names.get(group)
             if waldur_name != freeipa_name:
@@ -166,7 +166,7 @@ class GroupSynchronizer(object):
 
     def sync_members(self):
         for group in self.groups:
-            utils.TaskStatus('groups').renew_task_status()
+            utils.renew_task_status()
             waldur_members = self.group_users.get(group, set())
             backend_members = self.freeipa_users.get(group, set())
 
@@ -180,7 +180,7 @@ class GroupSynchronizer(object):
 
     def sync_children(self):
         for group in self.groups:
-            utils.TaskStatus('groups').renew_task_status()
+            utils.renew_task_status()
             waldur_children = self.group_children.get(group, set())
             freeipa_children = self.freeipa_children.get(group, set())
 
@@ -194,7 +194,7 @@ class GroupSynchronizer(object):
 
     def delete_stale_groups(self):
         for group in self.freeipa_groups - self.groups:
-            utils.TaskStatus('groups').renew_task_status()
+            utils.renew_task_status()
             self.client.group_del(group)
 
     def sync(self):
@@ -211,7 +211,7 @@ class GroupSynchronizer(object):
             self.delete_stale_groups()
 
         finally:
-            utils.TaskStatus('groups').release_task_status()
+            utils.release_task_status()
 
 
 class FreeIPABackend(object):
@@ -299,11 +299,8 @@ class FreeIPABackend(object):
                 pass
 
     def synchronize_names(self):
-        try:
-            for profile in models.Profile.objects.filter(is_active=True):
-                self.update_name(profile)
-        finally:
-            utils.TaskStatus('names').release_task_status()
+        for profile in models.Profile.objects.filter(is_active=True):
+            self.update_name(profile)
 
     def synchronize_groups(self):
         synchronizer = GroupSynchronizer(self._client)
