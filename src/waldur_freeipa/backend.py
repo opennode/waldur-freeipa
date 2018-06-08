@@ -35,6 +35,7 @@ class GroupSynchronizer(object):
     Note that in order to distinguish between Waldur managed groups and internal FreeIPA groups,
     group name prefix should be specified. Similarly, there's also user name prefix setting available.
     """
+
     def __init__(self, client):
         self.client = client
         self.prefix = settings.WALDUR_FREEIPA['GROUPNAME_PREFIX']
@@ -228,17 +229,19 @@ class FreeIPABackend(object):
     def create_profile(self, profile):
         waldur_user = profile.user
         ssh_keys = self._format_ssh_keys(waldur_user)
+        first_name, last_name, _ = utils.get_names(profile.user.full_name)
 
         self._client.user_add(
             username=profile.username,
-            first_name='N/A',
-            last_name='N/A',
+            first_name=first_name,
+            last_name=last_name,
             full_name=waldur_user.full_name,
             mail=waldur_user.email,
             job_title=waldur_user.job_title,
             preferred_language=waldur_user.preferred_language,
             telephonenumber=waldur_user.phone_number,
             ssh_key=ssh_keys,
+            gecos=profile.gecos,
         )
 
     def disable_profile(self, profile):
@@ -261,6 +264,39 @@ class FreeIPABackend(object):
 
         if backend_keys != ssh_keys:
             self._client.user_mod(profile.username, ipasshpubkey=ssh_keys)
+
+    def _update_profile(self, profile, params):
+        try:
+            self._client.user_mod(profile.username, **params)
+        except python_freeipa.exceptions.BadRequest as e:
+            # If no modifications to be performed freeipa-server return an exception.
+            if e.code == 4202:
+                pass
+
+    def update_name(self, profile):
+        first_name, last_name, initials = utils.get_names(profile.user.full_name)
+        params = {
+            'givenname': first_name,
+            'sn': last_name,
+            'cn': profile.user.full_name,
+            'displayname': profile.user.full_name,
+            'initials': initials,
+        }
+        self._update_profile(profile, params)
+
+    def update_gecos(self, profile):
+        params = {
+            'gecos': profile.gecos,
+        }
+        self._update_profile(profile, params)
+
+    def synchronize_names(self):
+        for profile in models.Profile.objects.filter(is_active=True):
+            self.update_name(profile)
+
+    def synchronize_gecos(self):
+        for profile in models.Profile.objects.filter(is_active=True):
+            self.update_gecos(profile)
 
     def synchronize_groups(self):
         synchronizer = GroupSynchronizer(self._client)

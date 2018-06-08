@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 import mock
 from python_freeipa import exceptions as freeipa_exceptions
 from rest_framework import status, test
+from ddt import data, ddt
 
 from waldur_core.structure.tests import factories as structure_factories
 from waldur_freeipa.tests.helpers import override_plugin_settings
 
 from . import factories
+from ..backend import FreeIPABackend
 
 
 class BaseProfileTest(test.APITransactionTestCase):
@@ -97,14 +99,15 @@ class ProfileCreateTest(BaseProfileTest):
         self.client.post(self.url, self.valid_data)
         mock_client().user_add.assert_called_once_with(
             username='waldur_alice',
-            first_name='N/A',
-            last_name='N/A',
+            first_name=self.user.full_name.split()[0],
+            last_name=self.user.full_name.split()[-1],
             full_name=self.user.full_name,
             mail=self.user.email,
             job_title=self.user.job_title,
             telephonenumber=self.user.phone_number,
             preferred_language=self.user.preferred_language,
-            ssh_key=[]
+            ssh_key=[],
+            gecos=','.join([self.user.full_name, self.user.email, self.user.phone_number]),
         )
 
     def test_when_profile_created_ssh_keys_are_attached(self, mock_client):
@@ -258,3 +261,42 @@ class ProfileSshKeysTest(test.APITransactionTestCase):
         response = self.update_keys()
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         mock_client().user_mod.assert_not_called()
+
+
+@ddt
+@mock.patch('python_freeipa.Client')
+class ProfileUpdateTest(test.APITransactionTestCase):
+    def setUp(self):
+        self.user = structure_factories.UserFactory()
+        self.profile = factories.ProfileFactory(user=self.user, is_active=False)
+
+    @data(('Alex Bloggs', 'Alex', 'Bloggs', 'AB'),
+          ('Alex', 'Alex', 'N/A', 'A'),
+          ('', 'N/A', 'N/A', ''))
+    def test_backend_is_called_with_correct_parameters_if_update_full_name(self, names, mock_client):
+        full_name = names[0]
+        first_name = names[1]
+        last_name = names[2]
+        initials = names[3]
+
+        user = self.profile.user
+        user.full_name = full_name
+        user.save()
+        self.profile.refresh_from_db()
+
+        FreeIPABackend().update_name(self.profile)
+        mock_client().user_mod.assert_called_once_with(
+            self.profile.username,
+            cn=full_name,
+            displayname=full_name,
+            givenname=first_name,
+            initials=initials,
+            sn=last_name,
+        )
+
+    def test_backend_is_called_with_correct_parameters_if_update_gecos(self, mock_client):
+        FreeIPABackend().update_gecos(self.profile)
+        mock_client().user_mod.assert_called_once_with(
+            self.profile.username,
+            gecos=','.join([self.user.full_name, self.user.email, self.user.phone_number]),
+        )
